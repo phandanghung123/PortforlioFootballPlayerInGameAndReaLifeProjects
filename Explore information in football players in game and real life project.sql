@@ -127,5 +127,6 @@ FROM dbo.process_data AS a
 LEFT JOIN dbo.fifa_players AS b
     ON a.Name = b.full_name
 WHERE VER = 'Normal Controlled'
+	AND b.nationality IS NOT NULL 
 GROUP BY b.nationality, a.Name
 ORDER BY avg_goals_per_90 DESC;
