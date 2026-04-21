@@ -108,7 +108,7 @@ ORDER BY total_score desc
 SELECT
     b.nationality,
     a.Name,
-    SUM(a.goals) AS total_goals,
+    Round(SUM(goals),1)*10 as total_score,
     ROUND(
         CASE 
             WHEN SUM(a.minutes_played) > 0 THEN 
