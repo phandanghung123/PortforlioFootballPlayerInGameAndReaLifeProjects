@@ -111,24 +111,22 @@ SELECT
     SUM(a.goals) AS total_goals,
     ROUND(
         CASE 
-            WHEN SUM(a.minutes_played) > 0 THEN
+            WHEN SUM(a.minutes_played) > 0 THEN 
                 (SUM(a.assists * 1.0) / SUM(a.minutes_played)) * 90
             ELSE NULL
-        END, 5
-    ) AS avg_assists_per_90,
+        END, 5) AS avg_assists_per_90,
     ROUND(
         CASE 
-            WHEN SUM(a.minutes_played) > 0 THEN
+            WHEN SUM(a.minutes_played) > 0 THEN 
                 (SUM(a.goals * 1.0) / SUM(a.minutes_played)) * 90
             ELSE NULL
-        END, 5
-    ) AS avg_goals_per_90
+        END, 5) AS avg_goals_per_90
 FROM dbo.process_data AS a
-LEFT JOIN dbo.process_data AS b 
+LEFT JOIN dbo.fifa_players AS b -- Đổi b thành bảng FIFA players
     ON a.Name LIKE '%' + b.name + '%' 
     OR b.name LIKE '%' + a.Name + '%'
-WHERE VER = 'Normal Controlled'
-	AND b.nationality IS NOT NULL 
+WHERE a.VER = 'Normal Controlled' 
+  AND b.nationality IS NOT NULL 
 GROUP BY b.nationality, a.Name
 ORDER BY avg_goals_per_90 DESC;
 
