@@ -12,7 +12,7 @@ SELECT
 FROM dbo.process_data
 WHERE team='Manchester United'
 
---Calculating VFM all of attacking players in order and perfomance per match (90 minutes)
+--Calculating VFM all of attacking players in popularity order and perfomance per match (90 minutes)
 
 
 SELECT
