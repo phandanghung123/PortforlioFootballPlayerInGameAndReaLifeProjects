@@ -105,38 +105,53 @@ GROUP BY team
 ORDER BY total_score desc
 
 --Which player has highest perfomance in scoring across nations
+----EDIT name of player in a form by creating temp tables------
+
+SELECT *,
+    LEFT(Name, 1) AS FirstInitial,
+    REVERSE(LEFT(REVERSE(Name), CHARINDEX(' ', REVERSE(Name) + ' ') - 1)) AS LastName
+INTO #Cleaned_Process_data
+FROM dbo.process_data
+WHERE VER = 'Normal Controlled';
+
+SELECT *,
+    LEFT(name, 1) AS FirstInitial,
+    REVERSE(LEFT(REVERSE(name), CHARINDEX(' ', REVERSE(name) + ' ') - 1)) AS LastName
+INTO #Cleaned_Fifa_Players
+FROM dbo.fifa_players;
+---Run code with 2 temp tables---
 SELECT
-    b.nationality,
-    a.Name,
-    Round(SUM(goals),1)*10 as total_score,
+    f.nationality,
+    p.Name AS Full_Name_Data,
+    f.name AS Short_Name_FIFA,
+    p.team,
+    ROUND(SUM(p.goals), 1) * 10 AS total_score,
     ROUND(
         CASE 
-            WHEN SUM(a.minutes_played) > 0 THEN 
-                (SUM(a.assists * 1.0) / SUM(a.minutes_played)) * 90
-            ELSE NULL
+            WHEN SUM(p.minutes_played) > 0 THEN 
+                (SUM(p.assists * 1.0) / SUM(p.minutes_played)) * 90
+            ELSE 0
         END, 5) AS avg_assists_per_90,
     ROUND(
         CASE 
-            WHEN SUM(a.minutes_played) > 0 THEN 
-                (SUM(a.goals * 1.0) / SUM(a.minutes_played)) * 90
-            ELSE NULL
+            WHEN SUM(p.minutes_played) > 0 THEN 
+                (SUM(p.goals * 1.0) / SUM(p.minutes_played)) * 90
+            ELSE 0
         END, 5) AS avg_goals_per_90
-FROM dbo.process_data AS a
-LEFT JOIN dbo.fifa_players AS b -- Đổi b thành bảng FIFA players
-    ON a.Name LIKE '%' + b.name + '%' 
-    OR b.name LIKE '%' + a.Name + '%'
-WHERE a.VER = 'Normal Controlled' 
-  AND b.nationality IS NOT NULL 
-GROUP BY b.nationality, a.Name
+FROM #Cleaned_Process_data AS p
+INNER JOIN #Cleaned_Fifa_Players AS f 
+    ON p.LastName = f.LastName     
+    AND p.age = f.age+4
+GROUP BY f.nationality, p.Name, f.name, p.team
 ORDER BY avg_goals_per_90 DESC;
 
 ---Overall football inforamation we got
 
 SELECT
-    COUNT(DISTINCT b.team) AS Total_teams,
-    COUNT(DISTINCT a.nationality) AS Total_nations,
-    COUNT(b.Name) AS Total_players
-FROM dbo.fifa_players AS a
-LEFT JOIN dbo.process_data AS b 
-    ON a.Name LIKE '%' + b.name + '%' 
-    OR b.name LIKE '%' + a.Name + '%'
+    COUNT(DISTINCT p.team) AS Total_teams,
+    COUNT(DISTINCT f.nationality) AS Total_nations,
+    COUNT(p.Name) AS Total_players
+FROM #Cleaned_Process_data AS p
+INNER JOIN #Cleaned_Fifa_Players AS f 
+    ON p.LastName = f.LastName     
+    AND p.age = f.age+4 
