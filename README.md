@@ -11,5 +11,8 @@
 * * **Features:** name, full_name, birth_date etc.
 
 ### 3. Data Processing Note
-Both datasets were combined using a **Left Join** in SQL Server based on the player names.
-All analyses apply to the ‘Normal Controlled’ version of FIFA 23.
+* Both datasets were combined using a **Left Join** in SQL Server based on the player names.
+* All analyses apply to the ‘Normal Controlled’ version of FIFA 23.
+* ## 📊 Dashboard
+👉 View interactive dashboard: https://public.tableau.com/views/your-dashboard
+
